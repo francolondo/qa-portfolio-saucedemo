@@ -26,6 +26,8 @@ pytest test_saucedemo.py -v
 
 ## Resultados
 ![Resultados de selenium](resultados.png)
+-----------------------------------------
+![Resultados de postman](resultados%20postman.png)
 
 Requiere tener Chrome instalado. Selenium Manager (incluido desde Selenium 4.6+) descarga el driver automáticamente.
 
