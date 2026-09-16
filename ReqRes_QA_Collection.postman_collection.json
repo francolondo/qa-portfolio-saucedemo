@@ -1,0 +1,223 @@
+{
+  "info": {
+    "name": "ReqRes QA Collection",
+    "description": "Colección de pruebas de API sobre https://reqres.in para portafolio de QA. Incluye validaciones de código de estado, estructura de respuesta y tiempo de respuesta para operaciones GET, POST, PUT y DELETE.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://reqres.in/api"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET - Listar usuarios (página 2)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users?page=2",
+          "host": ["{{baseUrl}}"],
+          "path": ["users"],
+          "query": [{ "key": "page", "value": "2" }]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('La respuesta contiene un arreglo de usuarios', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data).to.be.an('array');",
+              "    pm.expect(jsonData.data.length).to.be.above(0);",
+              "});",
+              "",
+              "pm.test('Cada usuario tiene los campos esperados', function () {",
+              "    var jsonData = pm.response.json();",
+              "    var primerUsuario = jsonData.data[0];",
+              "    pm.expect(primerUsuario).to.have.property('id');",
+              "    pm.expect(primerUsuario).to.have.property('email');",
+              "    pm.expect(primerUsuario).to.have.property('first_name');",
+              "    pm.expect(primerUsuario).to.have.property('last_name');",
+              "});",
+              "",
+              "pm.test('Tiempo de respuesta menor a 1000ms', function () {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET - Usuario individual existente",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "2"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('El id del usuario coincide con el solicitado', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.id).to.eql(2);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET - Usuario inexistente (404)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/9999",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "9999"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 404 para usuario inexistente', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('El cuerpo de la respuesta está vacío', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(Object.keys(jsonData).length).to.eql(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST - Crear usuario",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Gian Franco Londoño\",\n    \"job\": \"QA Tester\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": ["{{baseUrl}}"],
+          "path": ["users"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 201 (creado)', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('La respuesta contiene los datos enviados', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.name).to.eql('Gian Franco Londoño');",
+              "    pm.expect(jsonData.job).to.eql('QA Tester');",
+              "});",
+              "",
+              "pm.test('La respuesta incluye un id generado', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "PUT - Actualizar usuario",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Gian Franco Londoño\",\n    \"job\": \"QA Tester Senior\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "2"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('El campo job fue actualizado correctamente', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.job).to.eql('QA Tester Senior');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "DELETE - Eliminar usuario",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": ["{{baseUrl}}"],
+          "path": ["users", "2"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 204 (sin contenido)', function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
