@@ -24,6 +24,9 @@ pip install selenium pytest
 pytest test_saucedemo.py -v
 ```
 
+## Resultados
+![Resultados de selenium](resultados.png)
+
 Requiere tener Chrome instalado. Selenium Manager (incluido desde Selenium 4.6+) descarga el driver automáticamente.
 
 ## Cómo ejecutar la colección de Postman
