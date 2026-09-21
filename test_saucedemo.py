@@ -16,8 +16,11 @@ Cómo correr los tests:
     pytest test_saucedemo.py -v
 """
 
+import os
+
 import pytest
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -29,11 +32,24 @@ LOCKED_USER = "locked_out_user"
 VALID_PASSWORD = "secret_sauce"
 INVALID_PASSWORD = "wrong_pass"
 
+# En GitHub Actions no hay pantalla, así que corremos Chrome en modo
+# headless automáticamente cuando la variable de entorno CI está presente.
+# En tu máquina local (sin esa variable) Chrome se abre normal, para que
+# puedas ver el navegador mientras depuras.
+ES_ENTORNO_CI = os.environ.get("CI") is not None
+
 
 @pytest.fixture
 def driver():
     """Inicializa y cierra el navegador para cada test."""
-    drv = webdriver.Chrome()
+    opciones = Options()
+    if ES_ENTORNO_CI:
+        opciones.add_argument("--headless=new")
+        opciones.add_argument("--no-sandbox")
+        opciones.add_argument("--disable-dev-shm-usage")
+        opciones.add_argument("--window-size=1920,1080")
+
+    drv = webdriver.Chrome(options=opciones)
     drv.implicitly_wait(5)
     drv.get(BASE_URL)
     yield drv
